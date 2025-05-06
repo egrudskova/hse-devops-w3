@@ -3,8 +3,9 @@ name: Architecture Diagram CI
 on:
   push:
     branches: [main]
-    paths: ['docs/architecture.d2']
-    workflow_dispatch:
+    paths:
+      - 'docs/architecture.d2'
+      - '.github/workflows/diagram.yml'
 
 jobs:
   generate-diagram:
