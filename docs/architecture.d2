@@ -1,0 +1,255 @@
+direction: right
+
+Load_Balancer: Load Balancer {
+  shape: hexagon
+  style.fill: "#e8e8ff"
+  icon: https://icons.terrastruct.com/azure%2FNetworking%20Service%20Color%2FLoad%20Balancers.svg
+}
+
+Discovery: Service Discovery {
+  shape: oval
+  style.fill: "#e0f0ff"
+}
+
+Clients: {
+  *: {
+    label: ""
+    style.stroke: "transparent"
+    style.fill: "transparent"
+  }
+  shape: circle
+  style.fill: "#f0f0ff"
+  Web: {
+    icon: https://icons.terrastruct.com/essentials%2F140-internet.svg
+  }
+  Mobile: {
+    icon: https://icons.terrastruct.com/aws%2F_General%2FMobile-client_light-bg.svg
+  }
+  Desktop: {
+    icon: https://icons.terrastruct.com/tech%2Fdesktop.svg
+    label: ""
+  }
+}
+
+services: {
+  direction: right
+  label: "Microservices"
+  style.fill: "transparent"
+  style.stroke: "black"
+  style.stroke-dash: 3
+  Kafka: Apache Kafka {
+    shape: queue
+    style.multiple: true
+  }
+
+  Auth_Service: Auth (JWT) Service {
+    shape: rectangle
+    style.fill: "#ffd6d6"
+    Auth_1: Instance 1 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+    Auth_2: Instance 2 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+  }
+
+  User_Service: User Service {
+    shape: rectangle
+    style.fill: "#d6ffd6"
+    User_1: Instance 1 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+    User_2: Instance 2 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+  }
+
+  Channel_Service: Channel Service {
+    shape: rectangle
+    style.fill: "#d6d6ff"
+    Channel_1: Instance 1 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+    Channel_2: Instance 2 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+  }
+
+  Messaging_Service: Messaging Service {
+    shape: rectangle
+    style.fill: "#ffd6ff"
+    Messaging_1: Instance 1 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+    Messaging_2: Instance 2 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+  }
+
+  Presence_Service: Presence Service {
+    shape: rectangle
+    style.fill: "#d6ffff"
+    Presence_1: Instance 1 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+    Presence_2: Instance 2 {
+      style.fill: "transparent"
+      style.stroke: "transparent"
+      icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+    }
+  }
+
+  User_Service <- Kafka: Consume {style.stroke: "#d33"}
+  Channel_Service <- Kafka: Consume {style.stroke: "#d33"}
+  Messaging_Service -> Kafka: Publish {style.stroke: "#d33"}
+}
+
+services.Presence_Service -> Redis.Redis_Leader: Read/Write
+services.Presence_Service <- Redis.Replica_1: Read {style.stroke-dash: 3}
+services.Presence_Service <- Redis.Replica_2: Read {style.stroke-dash: 3}
+services.Messaging_Service -> MongoDB.Mongo_Leader: Write
+services.Messaging_Service <- MongoDB.Replica_1: Read {style.stroke-dash: 3}
+services.Messaging_Service <- MongoDB.Replica_2: Read {style.stroke-dash: 3}
+services.Auth_Service -> PostgreSQL_1.Postgre_Leader: Write
+services.Auth_Service <- PostgreSQL_1.Replica_1: Read {style.stroke-dash: 3}
+services.Auth_Service <- PostgreSQL_1.Replica_2: Read {style.stroke-dash: 3}
+services.Channel_Service -> PostgreSQL_2.Postgre_Leader: Write
+services.Channel_Service <- PostgreSQL_2.Replica_1: Read {style.stroke-dash: 3}
+services.Channel_Service <- PostgreSQL_2.Replica_2: Read {style.stroke-dash: 3}
+services.User_Service -> PostgreSQL_3.Postgre_Leader: Write
+services.User_Service <- PostgreSQL_3.Replica_1: Read {style.stroke-dash: 3}
+services.User_Service <- PostgreSQL_3.Replica_2: Read {style.stroke-dash: 3}
+
+MongoDB: {
+  style.fill: "#f0f9eb"
+  style.stroke: "#d1e8d5"
+  icon: https://icons.terrastruct.com/dev%2Fmongodb.svg
+  direction: down
+  *: {
+    shape: cylinder
+    style.fill: "#f0f0f0"
+  }
+
+  Mongo_Leader: Primary
+  Replica_1: Secondary
+  Replica_2: Secondary
+  Mongo_Leader -> Replica_1: Replication
+  Mongo_Leader -> Replica_2: Replication
+}
+
+Redis: {
+  style.fill: "#ffeeee"
+  style.stroke: "#ffcccc"
+  icon: https://icons.terrastruct.com/dev%2Fredis.svg
+  direction: down
+  *: {
+    shape: cylinder
+    style.fill: "#f0f0f0"
+    style.font-size: 11
+  }
+  Redis_Leader: Master
+  Replica_1: Async Slave
+  Replica_2: Async Slave
+  Redis_Leader -> Replica_1: Replication
+  Redis_Leader -> Replica_2: Replication
+}
+
+PostgreSQL_1: PostgreSQL {
+  style.fill: "#f0f8ff"
+  style.stroke: "#90caf9"
+  direction: down
+  icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
+  *: {
+    shape: cylinder
+    style.fill: "#f0f0f0"
+  }
+
+  Postgre_Leader: Master
+  Replica_1: Sync Slave
+  Replica_2: Async Slave
+
+  Postgre_Leader -> Replica_1: Replication
+  Postgre_Leader -> Replica_2: Replication
+}
+
+PostgreSQL_2: PostgreSQL {
+  style.fill: "#f0f8ff"
+  style.stroke: "#90caf9"
+  direction: right
+  icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
+  *: {
+    shape: cylinder
+    style.fill: "#f0f0f0"
+  }
+
+  Postgre_Leader: Master
+  Replica_1: Sync Slave
+  Replica_2: Async Slave
+
+  Postgre_Leader -> Replica_1: Replication
+  Postgre_Leader -> Replica_2: Replication
+}
+
+PostgreSQL_3: PostgreSQL {
+  style.fill: "#f0f8ff"
+  style.stroke: "#90caf9"
+  direction: right
+  icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
+  *: {
+    shape: cylinder
+    style.fill: "#f0f0f0"
+  }
+
+  Postgre_Leader: Master
+  Replica_1: Sync Slave
+  Replica_2: Async Slave
+
+  Postgre_Leader -> Replica_1: Replication
+  Postgre_Leader -> Replica_2: Replication
+}
+
+S3: File Storage {
+  shape: cloud
+  style.fill: "#e8f0e8"
+}
+
+services.Messaging_Service -> S3: Upload {style.stroke: "#090"}
+
+API_Gateway: API Gateway {
+  shape: hexagon
+  style.fill: "#ffe8d6"
+  API_Gateway_1: Instance 1 {
+    style.fill: "transparent"
+    style.stroke: "transparent"
+    icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+  }
+  API_Gateway_2: Instance 2 {
+    style.fill: "transparent"
+    style.stroke: "transparent"
+    icon: https://icons.terrastruct.com/essentials%2F112-server.svg
+  }
+}
+
+Clients -> Load_Balancer: HTTPS/WS
+Load_Balancer -> API_Gateway
+
+API_Gateway -> Discovery: Health check
+services.* -> Discovery: Register {style.stroke-dash: 3}

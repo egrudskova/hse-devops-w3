@@ -1,0 +1,29 @@
+name: Architecture Diagram CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/architecture.d2']
+
+jobs:
+  generate-diagram:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install D2
+        run: npm install -g @terrastruct/d2
+
+      - name: Generate SVG
+        run: d2 --theme=4 --layout=elk --sketch docs/architecture.d2 docs/architecture.svg
+
+      - name: Commit Artifact
+        run: |
+          git config --global user.name "CI Bot"
+          git config --global user.email "ci@example.com"
+          git add docs/architecture.svg
+          git commit -m "CI: Update architecture diagram"
+          git push
